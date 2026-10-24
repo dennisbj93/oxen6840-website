@@ -33,6 +33,12 @@ Siden er sat op til at bo på `https://oxen6840.dk` (canonical-link og delingsbi
 
 Bruger du et andet domæne, så ret `oxen6840.dk` i toppen af `index.html` (canonical og og:-felterne).
 
+## Åbningstider
+Åbningstiderne står ét sted nederst i `index.html` under `ÅBNINGSTIDER: ret kun her`. Siden viser selv de næste 7 dage med dato, fremhæver i dag og viser "Åbent nu" eller "Lukket" efter dansk tid.
+
+- Almindelig uge: `AABNINGSTIDER`, fx `5: ["14:00", "02:00"]` for fredag 14 til 02, eller `1: "lukket"`.
+- Helligdage og events: `SAERLIGE_DAGE`, fx `"2026-12-24": { tid: "lukket", note: "Juleaften" }`.
+
 ## Felter der skal udfyldes
 Gule felter med stiplet kant på siden mangler info. Søg efter `class="todo"` i `index.html`:
 - Åbningstider

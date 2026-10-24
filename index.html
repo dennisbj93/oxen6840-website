@@ -139,7 +139,26 @@ section.block + section.block .wrap { border-top: 1px solid var(--line); }
 .season p { color: var(--muted); font-size: .95rem; margin-top: .35rem; }
 
 /* Besøg */
-.visit { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.visit { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+
+/* Åbningstider, 7 dage */
+.hours { display: grid; gap: 1rem; }
+.hours-head { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.status { font-size: .85rem; font-weight: 700; padding: .25rem .7rem; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+.status::before { content: ""; display: inline-block; width: .55rem; height: .55rem; border-radius: 50%; margin-right: .45rem; vertical-align: .05rem; background: var(--muted); }
+.status.open::before { background: #2f9e44; }
+.status.closed::before { background: #c92a2a; }
+.days { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .5rem; }
+.day { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: .85rem .75rem; display: grid; gap: .15rem; text-align: center; align-content: start; }
+.day .wd { font-size: .8rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.day .dt { font-family: var(--display); font-size: 1.15rem; }
+.day .tm { font-variant-numeric: tabular-nums; font-weight: 500; font-size: .95rem; }
+.day.is-closed .tm { color: var(--muted); }
+.day.is-unknown .tm { color: var(--todo-ink); }
+.day.today { border: 2px solid var(--beer); box-shadow: 0 6px 18px -12px rgba(36, 31, 26, .5); }
+.day.today .wd { color: var(--ink); }
+.day .special { font-size: .75rem; color: var(--muted); }
+.hours-note { color: var(--muted); }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem; display: grid; gap: .4rem; align-content: start; }
 .card .val { font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
 .card small { color: var(--muted); font-size: .85rem; line-height: 1.45; }
@@ -157,6 +176,9 @@ footer .wrap { padding-block: 2rem 2.5rem; display: flex; justify-content: space
   .hero .wrap { grid-template-columns: 1fr; padding-block: 2rem 2.5rem; }
   .seasons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .visit { grid-template-columns: 1fr; }
+  .days { grid-template-columns: 1fr; }
+  .day { grid-template-columns: 5.5rem minmax(0, 1fr) auto; align-items: center; text-align: left; gap: .75rem; padding: .7rem 1rem; }
+  .day .special { grid-column: 2 / 4; }
 }
 @media (max-width: 560px) {
   .grid, .timeline { grid-template-columns: 1fr; }
@@ -267,16 +289,20 @@ footer .wrap { padding-block: 2rem 2.5rem; display: flex; justify-content: space
     <div class="wrap">
       <p class="eyebrow">Find os</p>
       <h2>Kig forbi i Nørregade</h2>
+      <div class="hours" aria-labelledby="hours-title">
+        <div class="hours-head">
+          <h3 id="hours-title">Åbningstider de næste 7 dage</h3>
+          <span class="status" id="hours-status" hidden></span>
+        </div>
+        <ol class="days" id="hours-days"></ol>
+        <p class="hours-note" id="hours-note" hidden><span class="todo">Mangler: åbningstider. Indtil da kan du se aktuelle tider på Facebook.</span></p>
+        <noscript><p class="hours-note">Slå JavaScript til for at se ugens åbningstider.</p></noscript>
+      </div>
       <div class="visit">
         <div class="card">
           <span class="eyebrow">Adresse</span>
           <span class="val">Nørregade 3<br>6840 Oksbøl</span>
           <a href="https://www.google.com/maps/search/?api=1&amp;query=N%C3%B8rregade+3%2C+6840+Oksb%C3%B8l" target="_blank" rel="noopener">Åbn i Google Maps</a>
-        </div>
-        <div class="card">
-          <span class="eyebrow">Åbningstider</span>
-          <span class="val"><span class="todo">Mangler: åbningstider</span></span>
-          <small>Indtil da kan du se aktuelle tider på Facebook.</small>
         </div>
         <div class="card">
           <span class="eyebrow">Kontakt</span>
@@ -294,6 +320,99 @@ footer .wrap { padding-block: 2rem 2.5rem; display: flex; justify-content: space
     <span>CVR 43738445</span>
   </div>
 </footer>
+
+<script>
+/* ===== ÅBNINGSTIDER: ret kun her =====
+   Ugedage: 0 = søndag, 1 = mandag ... 6 = lørdag.
+   Skriv ["14:00", "24:00"] for åbent, "lukket" for lukket, eller null hvis tiden ikke er kendt endnu.
+   Lukketid efter midnat skrives som fx "02:00". */
+const AABNINGSTIDER = {
+  1: null, // mandag
+  2: null, // tirsdag
+  3: null, // onsdag
+  4: null, // torsdag
+  5: null, // fredag
+  6: null, // lørdag
+  0: null  // søndag
+};
+/* Særlige dage (helligdage, events) går forud for ugeplanen. Format "ÅÅÅÅ-MM-DD".
+   Eksempel: "2026-12-24": { tid: "lukket", note: "Juleaften" } */
+const SAERLIGE_DAGE = {
+};
+/* ===================================== */
+
+(function () {
+  const TZ = "Europe/Copenhagen";
+  const list = document.getElementById("hours-days");
+  const statusEl = document.getElementById("hours-status");
+  const noteEl = document.getElementById("hours-note");
+  if (!list) return;
+
+  // Nuværende dato og klokkeslæt i dansk tid, uanset hvor den besøgende er.
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+  }).formatToParts(new Date()).map(p => [p.type, p.value]));
+  const today = new Date(Date.UTC(+parts.year, +parts.month - 1, +parts.day));
+  const nowMin = (+parts.hour) * 60 + (+parts.minute);
+
+  const iso = d => d.toISOString().slice(0, 10);
+  const addDays = (d, n) => new Date(d.getTime() + n * 86400000);
+  const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+  const fmt = t => { const [h, m] = t.split(":"); const hh = h === "24" ? "24" : String(+h).padStart(2, "0"); return m === "00" ? hh : hh + "." + m; };
+  const wdFmt = new Intl.DateTimeFormat("da-DK", { weekday: "short", timeZone: "UTC" });
+  const dtFmt = new Intl.DateTimeFormat("da-DK", { day: "numeric", month: "short", timeZone: "UTC" });
+
+  function dayInfo(d) {
+    const s = SAERLIGE_DAGE[iso(d)];
+    if (s) return { tid: s.tid, note: s.note || "" };
+    return { tid: AABNINGSTIDER[d.getUTCDay()], note: "" };
+  }
+  // Åbningsvindue i minutter fra dagens midnat; lukketid efter midnat lægges oven i.
+  function windowOf(tid) {
+    if (!Array.isArray(tid)) return null;
+    const o = toMin(tid[0]); let c = toMin(tid[1]);
+    if (c <= o) c += 1440;
+    return [o, c];
+  }
+
+  let unknown = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = addDays(today, i);
+    const { tid, note } = dayInfo(d);
+    const li = document.createElement("li");
+    li.className = "day" + (i === 0 ? " today" : "");
+    let tm;
+    if (tid === null || tid === undefined) { tm = "Mangler"; li.classList.add("is-unknown"); unknown++; }
+    else if (tid === "lukket") { tm = "Lukket"; li.classList.add("is-closed"); }
+    else tm = fmt(tid[0]) + "–" + fmt(tid[1]);
+    const wd = i === 0 ? "I dag" : i === 1 ? "I morgen" : wdFmt.format(d).replace(".", "");
+    li.innerHTML = '<span class="wd"></span><span class="dt"></span><span class="tm"></span>' + (note ? '<span class="special"></span>' : "");
+    li.querySelector(".wd").textContent = wd;
+    li.querySelector(".dt").textContent = dtFmt.format(d).replace(".", "");
+    li.querySelector(".tm").textContent = tm;
+    if (note) li.querySelector(".special").textContent = note;
+    if (i === 0) li.setAttribute("aria-current", "date");
+    list.appendChild(li);
+  }
+
+  if (unknown === 7) { noteEl.hidden = false; return; }
+  if (unknown > 0) noteEl.hidden = false;
+
+  // Status lige nu: tjek også om gårsdagens åbning løber efter midnat.
+  const yWin = windowOf(dayInfo(addDays(today, -1)).tid);
+  const tInfo = dayInfo(today);
+  const tWin = windowOf(tInfo.tid);
+  let text, cls;
+  if (yWin && nowMin + 1440 < yWin[1]) { text = "Åbent nu · lukker kl. " + fmt(dayInfo(addDays(today, -1)).tid[1]); cls = "open"; }
+  else if (tWin && nowMin >= tWin[0] && nowMin < tWin[1]) { text = "Åbent nu · lukker kl. " + fmt(tInfo.tid[1]); cls = "open"; }
+  else if (tWin && nowMin < tWin[0]) { text = "Lukket · åbner kl. " + fmt(tInfo.tid[0]); cls = "closed"; }
+  else if (tInfo.tid === null || tInfo.tid === undefined) { return; }
+  else { text = "Lukket nu"; cls = "closed"; }
+  statusEl.textContent = text;
+  statusEl.className = "status " + cls;
+  statusEl.hidden = false;
+})();
+</script>
 
 </body>
 </html>
