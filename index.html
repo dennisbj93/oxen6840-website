@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="da_DK">
 <meta property="og:image" content="https://oxen6840.dk/oxen-logo.jpg">
-<link rel="icon" href="oxen-logo.jpg">
+<link rel="icon" href="oxen-logo.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Libre+Franklin:wght@400;500;700&display=swap">
@@ -28,6 +28,8 @@
   --beer-ink: #241f1a;
   --rope: #e6d3b3;       /* rebet om hornene */
   --line: #e2dbd0;
+  --logo-ink: #141210;
+  --logo-horn: #4d4437;
   --todo-bg: #fff3c4;
   --todo-ink: #6a4b00;
   --display: "Alfa Slab One", "Rockwell", "Georgia", serif;
@@ -38,13 +40,13 @@
   :root:not([data-theme="light"]) {
     --bg: #1b1713; --surface: #26201b; --ink: #f2ece4; --muted: #b4a898;
     --horn: #d9c7ad; --beer: #f2c318; --beer-ink: #1b1713; --rope: #4d4133;
-    --line: #3a3129; --todo-bg: #4a3b00; --todo-ink: #ffe27a; color-scheme: dark;
+    --line: #3a3129; --logo-ink: #f2ece4; --logo-horn: #9a8770; --todo-bg: #4a3b00; --todo-ink: #ffe27a; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #1b1713; --surface: #26201b; --ink: #f2ece4; --muted: #b4a898;
   --horn: #d9c7ad; --beer: #f2c318; --beer-ink: #1b1713; --rope: #4d4133;
-  --line: #3a3129; --todo-bg: #4a3b00; --todo-ink: #ffe27a; color-scheme: dark;
+  --line: #3a3129; --logo-ink: #f2ece4; --logo-horn: #9a8770; --todo-bg: #4a3b00; --todo-ink: #ffe27a; color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -79,7 +81,8 @@ p { margin: 0; }
 /* Navigation */
 .nav { border-bottom: 1px solid var(--line); }
 .nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .9rem; flex-wrap: wrap; }
-.nav .brand { font-family: var(--display); font-size: 1.35rem; text-decoration: none; letter-spacing: .02em; }
+.nav .brand { display: block; color: var(--logo-ink); line-height: 0; }
+.nav .brand svg { display: block; height: 52px; width: auto; }
 .nav ul { list-style: none; display: flex; gap: 1.25rem; margin: 0; padding: 0; flex-wrap: wrap; font-weight: 500; font-size: .95rem; }
 .nav ul a { text-decoration: none; }
 .nav ul a:hover { text-decoration: underline; text-decoration-color: var(--beer); }
@@ -166,7 +169,7 @@ footer .wrap { padding-block: 2rem 2.5rem; display: flex; justify-content: space
 
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="#top">Oxen</a>
+    <a class="brand" href="#top" aria-label="Oxen, til forsiden"><svg viewBox="-10 -10 1939 1143" width="89" height="52" aria-hidden="true"><use href="oxen-logo.svg#logo"/></svg></a>
     <nav aria-label="Hovedmenu">
       <ul>
         <li><a href="#om">Om os</a></li>
@@ -192,7 +195,7 @@ footer .wrap { padding-block: 2rem 2.5rem; display: flex; justify-content: space
         </div>
       </div>
       <div class="sign">
-        <img src="oxen-logo.jpg" width="960" height="562" alt="Oxen-logoet: to skummende ølkrus over et par oksehorn">
+        <img src="oxen-logo.svg" width="960" height="566" alt="Oxen-logoet: to skummende ølkrus over et par oksehorn">
       </div>
     </div>
   </section>

@@ -2,7 +2,8 @@
 
 Filer:
 - `index.html` – hele siden
-- `oxen-logo.jpg` – logoet (bruges også som faviconikon)
+- `oxen-logo.svg` – logoet som vektor (header, forside og faviconikon)
+- `oxen-logo.jpg` – det originale logo (bruges som delingsbillede på Facebook)
 - `README.md` – denne vejledning
 
 ## Udgivelse via GitHub og Cloudflare Pages
