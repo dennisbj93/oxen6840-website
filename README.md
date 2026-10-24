@@ -44,6 +44,7 @@ Bruger du et andet domæne, så ret `oxen6840.dk` i toppen af hver HTML-fil (can
 Åbningstiderne står ét sted i toppen af `hours.js` under `ÅBNINGSTIDER: ret kun her`. Find os-siden viser selv de næste 7 dage med dato, fremhæver i dag og viser "Åbent nu" eller "Lukket" efter dansk tid.
 
 - Almindelig uge: `AABNINGSTIDER`, fx `5: ["14:00", "02:00"]` for fredag 14 til 02, eller `1: "lukket"`.
+- Er der ofte åbent længere, så skriv `"senere"` som tredje værdi, fx `["15:00", "00:00", "senere"]`. Så står der "15–00+" og "Ofte senere".
 - Helligdage og events: `SAERLIGE_DAGE`, fx `"2026-12-24": { tid: "lukket", note: "Juleaften" }`.
 
-Footeren på alle sider viser tiderne som almindelig tekst (Søn–tors 15–19, Fre–lør 15–00). Ændrer tiderne sig, så ret også dem.
+Footeren på alle sider viser tiderne som almindelig tekst (Søn–tors 15–19, Fre–lør 15–00, ofte senere). Ændrer tiderne sig, så ret også dem.

@@ -1,14 +1,15 @@
 /* ===== ÅBNINGSTIDER: ret kun her =====
    Ugedage: 0 = søndag, 1 = mandag ... 6 = lørdag.
    Skriv ["15:00", "19:00"] for åbent, "lukket" for lukket, eller null hvis tiden ikke er kendt.
-   Lukketid ved eller efter midnat skrives som fx "00:00" eller "02:00". */
+   Lukketid ved eller efter midnat skrives som fx "00:00" eller "02:00".
+   Tilføj "senere" som tredje værdi, hvis der ofte er åbent længere, fx ["15:00", "00:00", "senere"]. */
 const AABNINGSTIDER = {
   1: ["15:00", "19:00"], // mandag
   2: ["15:00", "19:00"], // tirsdag
   3: ["15:00", "19:00"], // onsdag
   4: ["15:00", "19:00"], // torsdag
-  5: ["15:00", "00:00"], // fredag
-  6: ["15:00", "00:00"], // lørdag
+  5: ["15:00", "00:00", "senere"], // fredag
+  6: ["15:00", "00:00", "senere"], // lørdag
   0: ["15:00", "19:00"]  // søndag
 };
 /* Særlige dage (helligdage, events) går forud for ugeplanen. Format "ÅÅÅÅ-MM-DD".
@@ -46,14 +47,18 @@ const SAERLIGE_DAGE = {
     if (c <= o) c += 1440;
     return [o, c];
   }
-  const label = tid => tid === "lukket" ? "Lukket" : Array.isArray(tid) ? fmt(tid[0]) + "–" + fmt(tid[1]) : "Ukendt";
+  const later = tid => Array.isArray(tid) && tid[2] === "senere";
+  const label = tid => tid === "lukket" ? "Lukket" : Array.isArray(tid) ? fmt(tid[0]) + "–" + fmt(tid[1]) + (later(tid) ? "+" : "") : "Ukendt";
+  const closes = tid => later(tid) ? "til kl. " + fmt(tid[1]) + " eller senere" : "lukker kl. " + fmt(tid[1]);
 
   // Status lige nu, også når gårsdagens åbning løber efter midnat.
   function statusNow() {
     const y = dayInfo(addDays(today, -1)), t = dayInfo(today);
     const yWin = windowOf(y.tid), tWin = windowOf(t.tid);
-    if (yWin && nowMin + 1440 < yWin[1]) return { cls: "open", text: "Åbent nu · lukker kl. " + fmt(y.tid[1]) };
-    if (tWin && nowMin >= tWin[0] && nowMin < tWin[1]) return { cls: "open", text: "Åbent nu · lukker kl. " + fmt(t.tid[1]) };
+    if (yWin && nowMin + 1440 < yWin[1]) return { cls: "open", text: "Åbent nu · " + closes(y.tid) };
+    // Efter den faste lukketid på en aften med "senere" ved vi ikke, om der stadig er åbent.
+    if (yWin && later(y.tid) && nowMin < 6 * 60) return null;
+    if (tWin && nowMin >= tWin[0] && nowMin < tWin[1]) return { cls: "open", text: "Åbent nu · " + closes(t.tid) };
     if (tWin && nowMin < tWin[0]) return { cls: "closed", text: "Lukket · åbner i dag kl. " + fmt(t.tid[0]) };
     for (let i = 1; i < 7; i++) {
       const n = dayInfo(addDays(today, i));
@@ -78,7 +83,8 @@ const SAERLIGE_DAGE = {
   if (!list) return;
   for (let i = 0; i < 7; i++) {
     const d = addDays(today, i);
-    const { tid, note } = dayInfo(d);
+    const info = dayInfo(d);
+    const tid = info.tid, note = info.note || (later(info.tid) ? "Ofte senere" : "");
     const li = document.createElement("li");
     li.className = "day" + (i === 0 ? " today" : "");
     if (tid === "lukket") li.classList.add("is-closed");
