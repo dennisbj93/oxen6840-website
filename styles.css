@@ -146,6 +146,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 }
 .card svg { width: 3rem; height: 3rem; color: var(--gold); }
 .cards.one { grid-template-columns: 1fr; }
+.cards.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .card p { color: var(--muted); margin-top: .3rem; }
 
 /* Årstider */
@@ -205,6 +206,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   .split.reverse > :first-child { order: 0; }
   .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .seasons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cards.three { grid-template-columns: 1fr; }
   .info { grid-template-columns: 1fr; }
   .site-footer .wrap { grid-template-columns: 1fr 1fr; }
   .days { grid-template-columns: 1fr; }
