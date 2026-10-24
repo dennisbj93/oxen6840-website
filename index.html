@@ -295,7 +295,7 @@ footer .wrap { padding-block: 2rem 2.5rem; display: flex; justify-content: space
           <span class="status" id="hours-status" hidden></span>
         </div>
         <ol class="days" id="hours-days"></ol>
-        <p class="hours-note" id="hours-note" hidden><span class="todo">Mangler: åbningstider. Indtil da kan du se aktuelle tider på Facebook.</span></p>
+        <p class="hours-note" id="hours-note" hidden><span class="todo">Mangler: åbningstid for en eller flere dage.</span></p>
         <noscript><p class="hours-note">Slå JavaScript til for at se ugens åbningstider.</p></noscript>
       </div>
       <div class="visit">
@@ -307,7 +307,7 @@ footer .wrap { padding-block: 2rem 2.5rem; display: flex; justify-content: space
         <div class="card">
           <span class="eyebrow">Kontakt</span>
           <span class="val"><a href="tel:+4525757330">25 75 73 30</a></span>
-          <small><span class="todo">Bekræft: nummeret er fra Krak.dk</span><br><span class="todo">Mangler: e-mail</span></small>
+          <small><span class="todo">Mangler: e-mail</span></small>
         </div>
       </div>
     </div>
@@ -327,13 +327,13 @@ footer .wrap { padding-block: 2rem 2.5rem; display: flex; justify-content: space
    Skriv ["14:00", "24:00"] for åbent, "lukket" for lukket, eller null hvis tiden ikke er kendt endnu.
    Lukketid efter midnat skrives som fx "02:00". */
 const AABNINGSTIDER = {
-  1: null, // mandag
-  2: null, // tirsdag
-  3: null, // onsdag
-  4: null, // torsdag
-  5: null, // fredag
-  6: null, // lørdag
-  0: null  // søndag
+  1: ["15:00", "19:00"], // mandag
+  2: ["15:00", "19:00"], // tirsdag
+  3: ["15:00", "19:00"], // onsdag
+  4: ["15:00", "19:00"], // torsdag
+  5: ["15:00", "00:00"], // fredag
+  6: ["15:00", "00:00"], // lørdag
+  0: ["15:00", "19:00"]  // søndag
 };
 /* Særlige dage (helligdage, events) går forud for ugeplanen. Format "ÅÅÅÅ-MM-DD".
    Eksempel: "2026-12-24": { tid: "lukket", note: "Juleaften" } */

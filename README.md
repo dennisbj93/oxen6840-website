@@ -41,7 +41,5 @@ Bruger du et andet domæne, så ret `oxen6840.dk` i toppen af `index.html` (cano
 
 ## Felter der skal udfyldes
 Gule felter med stiplet kant på siden mangler info. Søg efter `class="todo"` i `index.html`:
-- Åbningstider
 - Link til Facebook-gruppen
 - E-mail
-- Bekræft telefonnummer 25 75 73 30 (fundet på Krak.dk)
