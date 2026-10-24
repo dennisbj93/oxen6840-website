@@ -220,6 +220,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   .cards { grid-template-columns: 1fr; }
   .brand svg { height: 40px; }
   .menu a { padding: .4rem .6rem; font-size: .9rem; }
+  .menu li:first-child { display: none; } /* logoet fører til forsiden */
   .photo.framed::before { inset: .7rem -.7rem -.7rem .7rem; }
   .photo.framed { margin-right: .7rem; }
   .site-footer .wrap { grid-template-columns: 1fr; }
