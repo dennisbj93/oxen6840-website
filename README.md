@@ -38,7 +38,3 @@ Bruger du et andet domæne, så ret `oxen6840.dk` i toppen af `index.html` (cano
 
 - Almindelig uge: `AABNINGSTIDER`, fx `5: ["14:00", "02:00"]` for fredag 14 til 02, eller `1: "lukket"`.
 - Helligdage og events: `SAERLIGE_DAGE`, fx `"2026-12-24": { tid: "lukket", note: "Juleaften" }`.
-
-## Felter der skal udfyldes
-Gule felter med stiplet kant på siden mangler info. Søg efter `class="todo"` i `index.html`:
-- Link til Facebook-gruppen
